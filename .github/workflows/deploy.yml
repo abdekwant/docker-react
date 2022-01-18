@@ -1,20 +1,24 @@
-name: Deploy master
+name: Deploy Application
 on:
   push:
     branches:
       - master
  
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
 
-      - name: Generate deployment package
+      - name: Run application test suite
+        run: docker build -t abdekwant/app-test -f Dockerfile.dev .
+        run: docker run -e CI=true abdekwant/app-test npm test
+
+      - name: Create deployment ZIP package
         run: zip -r deploy.zip . -x '*.git*' 
 
-      - name: Deploy to EB
+      - name: Deploy ZIP package on Amazon Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v20
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
