@@ -11,8 +11,10 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v2
 
-      - name: Run application test suite
+      - name: Build application test suite
         run: docker build -t abdekwant/app-test -f Dockerfile.dev .
+        
+      - name: Run application test suite
         run: docker run -e CI=true abdekwant/app-test npm test
 
       - name: Create deployment ZIP package
